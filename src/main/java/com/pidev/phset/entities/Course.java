@@ -14,7 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Cours implements Serializable {
+public class Course implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer idCours;
@@ -23,6 +23,8 @@ public class Cours implements Serializable {
     Integer creditCours;
     String professorCours;
     String unit;
+    @Enumerated(EnumType.STRING)
+    Technology technology;
 
     @ManyToMany
     Set<Training> trainings;

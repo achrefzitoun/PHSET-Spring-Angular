@@ -28,10 +28,10 @@ public class Training implements Serializable {
     TypeTraining typeTraining;
 
     @OneToMany(mappedBy = "training")
-    Set<AvisTraining> avisTrainings;
+    Set<TrainingOpinion> trainingOpinions;
 
     @ManyToMany(mappedBy = "trainings")
-    Set<Cours> cours;
+    Set<Course> courses;
 
     @ManyToMany
     Set<Account> accounts;

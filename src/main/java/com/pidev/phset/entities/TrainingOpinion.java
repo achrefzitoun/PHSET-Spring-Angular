@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -12,11 +13,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AvisTraining {
+public class TrainingOpinion implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer idAvisT;
-    String textAvisT;
+    Integer idTrainingOpinion;
+    String textTrainingOpinion;
 
     @ManyToOne
     Training training;

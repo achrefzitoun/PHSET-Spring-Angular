@@ -32,6 +32,6 @@ public class Post  implements Serializable {
     @ManyToOne
     Account account;
 
-    @OneToOne
-    Like like;
+//    @OneToOne
+//    Like like;
 }
