@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class AdmissionServicesImpl implements IAdmissionServices {
+public class AdmissionAndRecrutementServices implements IAdmissionAndRecrutementServices {
     @Autowired
     ICandidacyRepository candidacyRepository;
     @Autowired
     IClassroomRepository classroomRepository;
+    @Autowired
+    IClassStateRepository classStateRepository;
     @Autowired
     ICriteriaRepository criteriaRepository;
     @Autowired
@@ -75,6 +77,34 @@ public class AdmissionServicesImpl implements IAdmissionServices {
     @Override
     public List<Classroom> retrieveAllClassroom() {
         return (List<Classroom>) classroomRepository.findAll();
+    }
+
+
+    //////// ****** CLASSSTate Services ****** ////////
+
+    @Override
+    public ClassState addClassState(ClassState classState) {
+        return classStateRepository.save(classState);
+    }
+
+    @Override
+    public ClassState updateClassState(ClassState classState) {
+        return classStateRepository.save(classState);
+    }
+
+    @Override
+    public void removeClassState(Integer idClassState) {
+        classStateRepository.deleteById(idClassState);
+    }
+
+    @Override
+    public ClassState retrieveClassState(Integer idClassState) {
+        return classStateRepository.findById(idClassState).orElse(null);
+    }
+
+    @Override
+    public List<ClassState> retrieveAllClassState() {
+        return (List<ClassState>) classStateRepository.findAll();
     }
 
     //////// ****** CRITERIA Services ****** ////////

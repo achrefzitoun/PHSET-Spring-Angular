@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Getter
@@ -12,13 +13,15 @@ import javax.persistence.*;
 @AllArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class JuryAppreciation {
+public class JuryAppreciation implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer idJuryAppreciation;
     Integer note;
     String comment;
+    @Enumerated(EnumType.STRING)
+    Result result;
 
     @OneToOne(mappedBy = "juryAppreciation")
     Interview interview;

@@ -5,6 +5,7 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Getter
@@ -13,12 +14,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Criteria implements Serializable {
+public class ClassState implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer idCriteria;
-    String nameCriteria;
+    Integer idClassState;
+    Date date;
+    boolean availability;
 
     @ManyToOne
-    GridEvaluation gridEvaluation;
+    Classroom classroom;
+
 }

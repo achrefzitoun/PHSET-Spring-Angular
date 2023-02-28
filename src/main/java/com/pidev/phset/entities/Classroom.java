@@ -4,7 +4,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -13,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Classroom {
+public class Classroom implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer idClass;
@@ -21,11 +23,14 @@ public class Classroom {
     Integer capacityClass;
     @Enumerated(EnumType.STRING)
     BlocEsprit blocEsprit;
-    String stateClass;
+
 
     @OneToMany(mappedBy = "classroom")
     List<Interview>interviews;
 
     @ManyToOne
     Event event;
+
+    @OneToMany(mappedBy = "classroom")
+    Set<ClassState> classStates;
 }

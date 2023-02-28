@@ -3,7 +3,7 @@ package com.pidev.phset.services;
 import com.pidev.phset.entities.*;
 import java.util.List;
 
-public interface IAdmissionServices {
+public interface IAdmissionAndRecrutementServices {
 
     //////// ****** CANDIDACY Services ****** ////////
 
@@ -21,6 +21,13 @@ public interface IAdmissionServices {
     Classroom retrieveClassroom(Integer idClassroom);
     List<Classroom> retrieveAllClassroom();
 
+    //////// ****** CLASSSTate Services ****** ////////
+
+    ClassState addClassState(ClassState classState);
+    ClassState updateClassState(ClassState classState);
+    void removeClassState(Integer idClassState);
+    ClassState retrieveClassState(Integer idClassState);
+    List<ClassState> retrieveAllClassState();
 
     //////// ****** CRITERIA Services ****** ////////
 
