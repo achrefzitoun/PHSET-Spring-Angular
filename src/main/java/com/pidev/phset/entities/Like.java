@@ -1,4 +1,4 @@
-package com.pidev.phset.entities;
+/*package com.pidev.phset.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,3 +24,4 @@ public class Like implements Serializable {
 
 
 }
+*/
