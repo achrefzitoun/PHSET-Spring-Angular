@@ -54,7 +54,7 @@ public class SecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
-                .antMatchers("/api/auth/signin").permitAll()
+                .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/v3/api-docs/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 //.antMatchers("/**").permitAll()
@@ -67,7 +67,4 @@ public class SecurityConfig {
 
         return http.build();
     }
-
-
-
 }
