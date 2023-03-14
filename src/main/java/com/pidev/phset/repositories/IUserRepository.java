@@ -1,17 +1,22 @@
 package com.pidev.phset.repositories;
 
-import com.pidev.phset.entities.Account;
+import com.pidev.phset.entities.Role;
+
 import com.pidev.phset.entities.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
 
-import java.util.Optional;
+import java.util.List;
 
-
-public interface IUserRepository extends JpaRepository<User,Integer> {
+public interface IUserRepository extends CrudRepository<User,Integer> {
     Optional<User> findByFirstName(String username);
 
     Boolean existsByFirstName(String username);
 
     Boolean existsByEmail(String email);
+    
+    List<User> findByRole(Role a);
 
+    @Query("select u from User u where u.idUser = ?1")
+    User findByIdUser(int id);
 }
