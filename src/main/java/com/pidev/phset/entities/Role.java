@@ -1,15 +1,16 @@
 package com.pidev.phset.entities;
 
-import org.springframework.security.core.GrantedAuthority;
 
-import java.util.List;
+
+
 
 public enum Role {
-    Admin,
-    Professor,
-    Student,
-    Externat_trainer,
-    Speaker;
+   ROLE_Admin,
+    ROLE_Professor,
+    ROLE_Student,
+    ROLE_Externat_trainer,
+    ROLE_Speaker;
+
 
 
 }

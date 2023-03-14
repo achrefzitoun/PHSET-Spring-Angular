@@ -1,4 +1,4 @@
-package com.pidev.phset.security.Services;
+/*package com.pidev.phset.security.Services;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pidev.phset.entities.User;
@@ -37,7 +37,7 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(User user) {
        /* List<GrantedAuthority> authorities = user.getRole().
                 .map(role -> new SimpleGrantedAuthority(role)
-                .collect(Collectors.toList()));*/
+                .collect(Collectors.toList()));
 
         return new UserDetailsImpl(
                 user.getIdUser(),
@@ -95,3 +95,4 @@ public class UserDetailsImpl implements UserDetails {
         return Objects.equals(id, user.id);
     }
 }
+*/
