@@ -1,7 +1,9 @@
 package com.pidev.phset.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Set;
@@ -20,19 +22,24 @@ public class Training implements Serializable {
     String titleTraining;
     String descriptionTraining;
     String durationTraining;
+    @JsonIgnore
     Technology subjectTraining;
-    String levelTraining;
+    @Enumerated(EnumType.STRING)
+    LVL levelTraining;
     Float priceTraining;
+    @JsonIgnore
     Integer stateTraining = 0;
     @Enumerated(EnumType.STRING)
     TypeTraining typeTraining;
 
     @OneToMany(mappedBy = "training")
-    Set<AvisTraining> avisTrainings;
+    //@JsonIgnore
+    Set<TrainingOpinion> trainingOpinions;
 
     @OneToMany(mappedBy = "training")
+    //@JsonIgnore
     Set<Course> courses;
 
-    @ManyToMany
-    Set<Account> accounts;
+    @ManyToOne
+    Account account;
 }
