@@ -2,6 +2,7 @@ package com.pidev.phset.services;
 
 import com.pidev.phset.entities.*;
 import java.util.List;
+import java.util.Set;
 
 public interface IFaqAndTrainingServices {
 
@@ -110,7 +111,7 @@ public interface IFaqAndTrainingServices {
 
     String addCourseAndChapters(Course course);
 
-    String addExamAndAssignQuestionAndResponse(Exam exam);
+    String addExamAndAffectToCourseAndAssignQuestionAndResponse(Exam exam,Integer idCourse);
 
     String setTrainingStateAndAffectCertificate();
 
@@ -118,11 +119,12 @@ public interface IFaqAndTrainingServices {
 
     /* *********************** bas ******************************************* */
 
+    String addQuestionFAQAndTags(QuestionFAQ questionFAQ);
     String addResponseFAQToQuestionFAQAndAssignTopic(Integer idQ, ReponseFAQ r,Integer idT);
 
     String addTagsToQuestionFAQ(Integer idT, String tagtext);
 
-//    void extractWordFromQuestion(String question);
+    Set<String> extractAndSaveWordFromQuestion(String question);
 
     void searchPossiblesQuestionsResponses(String question);
 

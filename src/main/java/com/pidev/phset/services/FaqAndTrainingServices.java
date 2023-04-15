@@ -5,6 +5,8 @@ import com.pidev.phset.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
@@ -167,18 +169,15 @@ public class FaqAndTrainingServices implements IFaqAndTrainingServices {
 
     @Override
     public String addQuestionFAQ(QuestionFAQ questionFAQ) {
-        List<QuestionFAQ> questionFAQS = retrieveAllQuestionFAQs();
-        for (QuestionFAQ q:questionFAQS) {
-            if (q.getTextQuestion().equals(questionFAQ.getTextQuestion().toUpperCase())){
-                return ("Question aleady exist !!!");
-            }else {
-                questionFAQRepository.save(questionFAQ);
-                questionFAQ.setTextQuestion(questionFAQ.getTextQuestion().toUpperCase());
-                questionFAQRepository.save(questionFAQ);
-            }
-        }
+        questionFAQRepository.save(questionFAQ);
+        questionFAQ.setTextQuestion(questionFAQ.getTextQuestion().toUpperCase());
+        Set<Tag> tags = new HashSet<>();
+        questionFAQ.setTags(tags);
+        questionFAQRepository.save(questionFAQ);
         return (" Added Successfully !!! ");
     }
+
+
 
     @Override
     public QuestionFAQ updateQuestionFAQ(Integer idQuestionFAQ,QuestionFAQ questionFAQ) {
@@ -394,42 +393,48 @@ public class FaqAndTrainingServices implements IFaqAndTrainingServices {
     };
 
     @Override
-    public String addExamAndAssignQuestionAndResponse(Exam exam){
+    public String addExamAndAffectToCourseAndAssignQuestionAndResponse(Exam exam,Integer idCourse){
+        Course course = courseRepository.findById(idCourse).orElse(null);
         examRepository.save(exam);
-        for (QuestionExam q : exam.getQuestionExams()) {
-            q.setExam(exam);
+        if (course != null){
+            course.setExam(exam);
+            courseRepository.save(course);
+            for (QuestionExam q : exam.getQuestionExams()) {
+                q.setExam(exam);
                 questionExamRepository.save(q);
-            for (ReponseExam r : q.getReponsesExam()) {
-                r.setQuestionExam(q);
-                reponseExamRepository.save(r);
+                for (ReponseExam r : q.getReponsesExam()) {
+                    r.setQuestionExam(q);
+                    reponseExamRepository.save(r);
+                }
             }
+        }
+        else {
+            return "Courses not found !!!";
         }
         return "Added Successfully";
     };
 
+
     @Override
-    public String setTrainingStateAndAffectCertificate() {
+    public String setTrainingStateAndAffectCertificate(){
         List<Training> trainings = retrieveAllTrainings();
         for (Training t : trainings) {
-            for (Account account : t.getAccounts()){
-                int state = 1;
-                for (Course c : t.getCourses()) {
-                    if (c.getExam().getScoreExam() < 10) {
-                        state = 0;
-                        break;
-                    }
+            int state = 1;
+            for (Course c : t.getCourses()) {
+                if (c.getExam().getScoreExam() < 10) {
+                    state = 0;
+                    break;
                 }
-                if (state == 1) {
-                    t.setStateTraining(1);
-                    trainingRepository.save(t);
-                    Certificate c = new Certificate();
-                    c.setTitleCertif("Certification " + t.getTypeTraining() + " Niveau " + t.getLevelTraining());
-                    c.setUniqueId(UUID.randomUUID().toString());
-                    c.setSignatureCertif("Certificat délivrée par ESPRIT pour Mr/Mme .....");
-
-                    c.setAccount(account);
-                    certificateRepository.save(c);
-                }
+            }
+            if (state == 1 && t.getStateTraining() == 0){
+                t.setStateTraining(1);
+                trainingRepository.save(t);
+                Certificate c = new Certificate();
+                c.setTitleCertif("Certification "+t.getTypeTraining()+" Niveau "+t.getLevelTraining());
+                c.setSignatureCertif(UUID.randomUUID().toString());
+                c.setSignatureCertif("Certificat délivrée par ESPRIT pour Mr/Mme .....");
+                c.setAccount(t.getAccount());
+                certificateRepository.save(c);
             }
         }
         return "Affected Successfully";
@@ -444,7 +449,7 @@ public class FaqAndTrainingServices implements IFaqAndTrainingServices {
         return ("Added Successfully");
     };
 
-/************************ bas ********************************************/
+    /************************ bas ********************************************/
 
     @Override
     public String addResponseFAQToQuestionFAQAndAssignTopic(Integer idQ, ReponseFAQ r,Integer idT){
@@ -491,19 +496,88 @@ public class FaqAndTrainingServices implements IFaqAndTrainingServices {
         return ("Added Successfully");
     };
 
-//    @Override
-//    public void extractWordFromQuestion(String question){
-//        String[]Qwords = question.split("[ ',;.?!]+");
-//        Set<String> words = new HashSet<>();
-//        for (String w : Qwords) {
-//            if (w.length()>3){
-//                words.add(w);
-//            }
-//        }
-////        for (String w:words) {
-////            System.out.println(w);
-////        }
-//    };
+
+    @Override
+    @Transactional
+    public String addQuestionFAQAndTags(QuestionFAQ questionFAQ) {
+        List<QuestionFAQ> questionFAQS = retrieveAllQuestionFAQs();
+        if (questionFAQS.size()==0){
+            addQuestionFAQ(questionFAQ);
+            extractAndSaveWordFromQuestion(questionFAQ.getTextQuestion());
+            List<Tag> tagList = retrieveAllTags();
+            for (Tag tag : tagList){
+                questionFAQ.getTags().add(tag);
+                questionFAQRepository.save(questionFAQ);
+            }
+        }
+        else {
+            for (QuestionFAQ q:questionFAQS) {
+                if (q.getTextQuestion().equals(questionFAQ.getTextQuestion().toUpperCase())){
+                    return ("Question aleady exist !!!");
+                }
+            }
+            addQuestionFAQ(questionFAQ);
+            extractAndSaveWordFromQuestion(questionFAQ.getTextQuestion());
+            Set<String> tags = extractWordFromQuestion(questionFAQ.getTextQuestion());
+            List<Tag> tagList = retrieveAllTags();
+            for (String t : tags) {
+                for (Tag tag : tagList){
+                    if (t.equals(tag.getNameTag())){
+                        questionFAQ.getTags().add(tag);
+                        questionFAQRepository.save(questionFAQ);
+                    }
+                }
+            }
+        }
+        return (" Added Successfully !!! ");
+    }
+
+    public Set<String> extractWordFromQuestion(String question){
+        String[]Qwords = question.split("[ ',;.?!]+");
+        Set<String> words = new HashSet<>();
+        for (String w : Qwords) {
+            if (w.length()>3){
+                words.add(w.toLowerCase());
+            }
+        }
+        return words;
+    }
+
+    @Override
+    public Set<String> extractAndSaveWordFromQuestion(String question){
+        String[]Qwords = question.split("[ ',;.?!]+");
+        Set<String> words = new HashSet<>();
+        for (String w : Qwords) {
+            if (w.length()>3){
+                words.add(w.toLowerCase());
+            }
+        }
+        List<Tag> tagList = retrieveAllTags();
+        if (tagList.size()==0){
+            for (String w : words) {
+                Tag tag = new Tag();
+                tag.setNameTag(w.toLowerCase());
+                tagRepository.save(tag);
+            }
+        }
+        else {
+            int found = 0;
+            for (String w : words) {
+                for (Tag t : tagList) {
+                    if (t.getNameTag().equals(w)) {
+                        found = 1;
+                        break;
+                    }
+                }
+                if (found==0){
+                    Tag tag = new Tag();
+                    tag.setNameTag(w.toLowerCase());
+                    tagRepository.save(tag);
+                }
+            }
+        }
+        return words;
+    };
 
     @Override
     public void searchPossiblesQuestionsResponses(String question){
@@ -541,8 +615,8 @@ public class FaqAndTrainingServices implements IFaqAndTrainingServices {
         sortedQuestionIDs.sort((id1, id2) -> questionCount.get(id2) - questionCount.get(id1));
         if (sortedQuestionIDs.size()!=0){
             for (Integer id : sortedQuestionIDs) {
-                System.out.println(retrieveQuestionFAQ(id).getTextQuestion());
-                System.out.println(retrieveQuestionFAQ(id).getReponseFAQ().getNameReponseFAQ());
+                System.out.println("Q : "+retrieveQuestionFAQ(id).getTextQuestion());
+                System.out.println("R : "+retrieveQuestionFAQ(id).getReponseFAQ().getNameReponseFAQ());
             }
         }else {
             System.out.println(" no results !!! ");
